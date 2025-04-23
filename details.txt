@@ -1,0 +1,50 @@
+if st.button(f"View Details for {movie_title}"):
+    movie_details = fetch_movie_details(selected_movie_id)
+    
+    # Display the entire movie details for debugging
+    st.write("Movie Details Response:", movie_details)  # This will show the entire response
+
+    st.write("**Synopsis:**", movie_details.get('overview', 'No synopsis available.'))
+    st.write("**Release Date:**", movie_details.get('release_date', 'No release date available.'))
+
+    # Check if 'credits' key exists
+    if 'credits' in movie_details and 'cast' in movie_details['credits']:
+        cast_names = [cast['name'] for cast in movie_details['credits']['cast'][:5]]
+        st.write("**Cast:**", ", ".join(cast_names))
+    else:
+        st.write("**Cast:** No cast information available.")
+
+
+
+
+
+
+if st.button('Recommend'):
+    recommendations = get_recommendations(selected_movie)
+    st.write("Top 10 recommended movies:")
+
+    for i in range(0, 10, 5):  
+        cols = st.columns(5)  
+        for col, j in zip(cols, range(i, i+5)):
+            if j < len(recommendations):
+                movie_title = recommendations.iloc[j]['title']
+                movie_id = recommendations.iloc[j]['movie_id']
+                poster_url = fetch_poster(movie_id)
+                
+                with col:
+                    st.image(poster_url, width=130)
+                    st.write(movie_title)
+                    
+                    # Use a unique button label for each movie
+                    if st.button(f'Show Details for {movie_title}'):
+                        movie_details = fetch_movie_details(movie_id)
+                        st.write("Movie Details Response:", movie_details)  # Display the entire response
+                        st.write("**Synopsis:**", movie_details.get('overview', 'No synopsis available.'))
+                        st.write("**Release Date:**", movie_details.get('release_date', 'No release date available.'))
+
+                        # Check if 'credits' key exists
+                        if 'credits' in movie_details and 'cast' in movie_details['credits']:
+                            cast_names = [cast['name'] for cast in movie_details['credits']['cast'][:5]]
+                            st.write("**Cast:**", ", ".join(cast_names))
+                        else:
+                            st.write("**Cast:** No cast information available.")
